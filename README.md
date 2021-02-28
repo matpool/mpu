@@ -32,7 +32,7 @@ What's more, The NVIDIA driver is proprietary and we have no idea what's going o
 ---
 
 # NOTE
-only tested on _kernel 4.15.0-136_ , _docker 19.03.15_ , _NVIDIA driver 440.64_
+only tested on _kernel 4.15.0-136 x64_ , _docker 19.03.15_ , _NVIDIA driver 440.64_
 
 ---
 Afterwords, we'd like to maintain the project with fully tested and more kernels and NVIDIA drivers supported. 
