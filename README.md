@@ -21,8 +21,15 @@ What's more, The NVIDIA driver is proprietary and we have no idea what's going o
   - on pre-stage, before invoking NVIDIA ioctl, the virtual PIDs (returned from **①**, converted) must convert back to global ones, since NVIDIA driver only recognize global PIDs. 
   - and one post-stage, after NVIDIA ioctl invoked, cast global PIDs back
 
+---
+![71614489144_ pic](https://user-images.githubusercontent.com/14119758/109408926-28831a00-79c9-11eb-8abf-a8382f5a897a.jpg)
+---
+![61614489023_ pic](https://user-images.githubusercontent.com/14119758/109408930-2d47ce00-79c9-11eb-8ec3-90f4324c6dd3.jpg)
+---
+
 # NOTE
 only tested on _kernel 4.15.0-136_ , _docker 19.03.15_ , _NVIDIA driver 440.64_
 
+---
 Afterwords, we'd like to maintain the project with fully tested and more kernels and NVIDIA drivers supported. 
 However we sincerely hope NVIDIA will fix this with simplicity and professionalism. Thx.
