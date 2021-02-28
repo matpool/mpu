@@ -1,9 +1,13 @@
 # MPU
-A shim driver allows in-docker nvidia-smi showing correct process list.
+A shim driver allows in-docker nvidia-smi showing correct process list without modify anything.
 
 # The problems
 The NVIDIA driver is not aware of the PID namespace and nvidia-smi has no capability to map global pid to virtual pid, thus it shows nothing.
 What's more, The NVIDIA driver is proprietary and we have no idea what's going on inside even small part of the Linux NVIDIA driver is open sourced.
+
+# The alternatives
+- add 'hostPID: true' to the pod specification
+- add '--pid=host' when starting a docker instance
 
 # The solution steps
 - figure out the basic mechanism of the NVIDIA driver with the open sourced part
