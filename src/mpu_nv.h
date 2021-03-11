@@ -38,7 +38,7 @@
 #define NV_IOCTL_DEV_QUERY 0x2a
 
 ///
-// below types are reverse engined from ioctl syscall
+// below types are the work of reverse engineering based on ioctl syscall
 // if you haven't got what it's meaning, type the variable with '_' prefix and end it with sequential numbers.
 // to avoid incorrect memory access, if the pointer is pointing to an UVA, you must start the variable with 'u_'
 ///
