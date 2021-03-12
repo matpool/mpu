@@ -49,7 +49,7 @@ typedef struct mpu_dev_query {
     u32   _1;
     u32   _2;
     void  * u_ptr  ALIGN_BYTES(8); // internal pointer
-    u32   size;
+    u32   tag;
 } mpu_dev_query_t;
 
 typedef struct mpu_nvml_process_list {

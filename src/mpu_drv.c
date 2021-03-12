@@ -22,6 +22,7 @@
 #include <linux/slab.h>
 
 #include "mpu_syscall_hook.h"
+#include "mpu_ioctl.h"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Magnus <Magnusbackyard@live.com>");
@@ -55,9 +56,15 @@ static mpu_ctx_t *mpu_init_ctx(void)
   mpu_ctx_t *ctx;
   ctx = kzalloc(sizeof(mpu_ctx_t), GFP_KERNEL);
   if (ctx == NULL)
-    return ctx;
+    return NULL;
 
-  // TODO: init nv handlers
+  ctx->hs = mpu_init_nv_handlers();
+  if (ctx->hs == NULL)
+  {
+    kfree(ctx);
+    return NULL;
+  }
+
   return ctx;
 }
 
@@ -66,7 +73,7 @@ static void mpu_free_ctx(mpu_ctx_t *ctx)
   if (ctx == NULL)
     return;
 
-  // TODO: free nv handlers
+  mpu_free_nv_handlers(ctx->hs);
   kfree(ctx);
 }
 
@@ -111,6 +118,7 @@ static int __init mpu_drv_init(void)
     goto error;
 
   printk(KERN_INFO "mpu: mpu driver initialized.\n");
+  mpu_print_nv_handlers(mpu_ctx->hs);
   return 0;
 
 error:
