@@ -33,7 +33,7 @@ struct mpu_nv_handlers_s
   mpu_nv_handler_t *vals;
 };
 
-static long nv_handle_dev_query(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev, pid_t pid);
+static long nv_handle_dev_query(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev);
 
 static mpu_nv_handler_t handlers[] = {
     {NV_IOCTL_DEV_QUERY, nv_handle_dev_query},
@@ -196,7 +196,7 @@ static long nv_handle_query_nvml_process_mem_pre(mpu_dev_query_t *qm)
 static long nv_handle_query_nvml_process_mem_post(mpu_dev_query_t *qm)
   MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_mem_list_t, mpu_nvml_process_mem_item_t, cast_vnr_pids)
 
-static long nv_handle_dev_query(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev, pid_t pid)
+static long nv_handle_dev_query(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev)
 {
   size_t arg_size = _IOC_SIZE(ioctl_c->cmd);
   mpu_dev_query_t *arg_copy = NULL;

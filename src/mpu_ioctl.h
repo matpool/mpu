@@ -26,7 +26,7 @@ typedef struct mpu_nv_handler_s
   /**
    * @param pid request process global pid
    */
-  long (*handle)(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev, pid_t pid);
+  long (*handle)(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev);
 } mpu_nv_handler_t;
 
 /**

@@ -79,12 +79,20 @@ static void mpu_free_ctx(mpu_ctx_t *ctx)
 
 long mpu_module_ioctl(mpu_ctx_t *ctx, struct mpu_ioctl_call_s *ioctl_c, dev_t rdev)
 {
+  mpu_nv_handler_t *h;
   if (MAJOR(rdev) == NV_MAJOR_DEVICE_NUMBER)
   {
     // only works in container
     if (mpu_is_task_under_pid_ns(current))
     {
-      // TODO:
+      h = mpu_find_nv_handler(ctx->hs, _IOC_NR(ioctl_c->cmd));
+      if (IS_ERR(h))
+      {
+        if (PTR_ERR(h) != -ENOENT)
+          printk(KERN_ERR "mpu: find ioctl handler with an error 0x%lx\n", -PTR_ERR(h));
+      }
+      else
+        return h->handle(ioctl_c, rdev);
     }
   }
 
@@ -123,7 +131,7 @@ static int __init mpu_drv_init(void)
 
 error:
   mpu_drv_on_exit();
-  return -1;
+  return ret;
 }
 
 static void __exit mpu_drv_exit(void)
