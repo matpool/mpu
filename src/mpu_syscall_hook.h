@@ -29,7 +29,6 @@
  */
 typedef struct mpu_ioctl_call_s
 {
-  asmlinkage long (*ioctl)(unsigned int fd, unsigned int cmd, unsigned long arg);
   unsigned int fd;
   unsigned int cmd;
   unsigned long arg;
@@ -49,9 +48,6 @@ int mpu_init_ioctl_hook(mpu_module_t *module, mpu_ctx_t *ctx);
  */
 void mpu_exit_ioctl_hook(void);
 
-static inline long mpu_call_ioctl(mpu_ioctl_call_t *c)
-{
-  return c->ioctl(c->fd, c->cmd, c->arg);
-}
+long mpu_call_ioctl(mpu_ioctl_call_t *c);
 
 #endif // __MPU_SYSCALL_HOOK__
