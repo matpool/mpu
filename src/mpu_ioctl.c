@@ -190,11 +190,17 @@ static void print_pids(u32 *pids, u32 off, u32 cnt, const char *tag)
 static long nv_handle_query_nvml_processes(mpu_dev_query_t *qm)
   MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_list_t, u32, cast_vnr_pids)
 
-static long nv_handle_query_nvml_process_mem_pre(mpu_dev_query_t *qm)
-  MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_mem_list_t, mpu_nvml_process_mem_item_t, cast_nr_pids)
+static long nv_handle_query_nvml_process_mem_1f48_pre(mpu_dev_query_t *qm)
+  MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_mem_list_1f48_t, mpu_nvml_process_mem_item_1f48_t, cast_nr_pids)
 
-static long nv_handle_query_nvml_process_mem_post(mpu_dev_query_t *qm)
-  MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_mem_list_t, mpu_nvml_process_mem_item_t, cast_vnr_pids)
+static long nv_handle_query_nvml_process_mem_1f48_post(mpu_dev_query_t *qm)
+  MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_mem_list_1f48_t, mpu_nvml_process_mem_item_1f48_t, cast_vnr_pids)
+
+static long nv_handle_query_nvml_process_mem_2588_pre(mpu_dev_query_t *qm)
+  MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_mem_list_2588_t, mpu_nvml_process_mem_item_2588_t, cast_nr_pids)
+
+static long nv_handle_query_nvml_process_mem_2588_post(mpu_dev_query_t *qm)
+  MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_mem_list_2588_t, mpu_nvml_process_mem_item_2588_t, cast_vnr_pids)
 
 static long nv_handle_dev_query(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev)
 {
@@ -220,12 +226,17 @@ static long nv_handle_dev_query(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev)
     goto done;
   }
 
-  if (arg_copy->tag == 0x1f48)
+  switch (arg_copy->tag)
   {
-    ret = nv_handle_query_nvml_process_mem_pre(arg_copy);
-    if (ret < 0)
-      goto done;
+  case 0x1f48:
+    ret = nv_handle_query_nvml_process_mem_1f48_pre(arg_copy);
+    break;
+  case 0x2588:
+    ret = nv_handle_query_nvml_process_mem_2588_pre(arg_copy);
+    break;
   }
+  if (ret < 0)
+    goto done;
 
   ret = mpu_call_ioctl(ioctl_c);
   if (ret < 0)
@@ -237,7 +248,10 @@ static long nv_handle_dev_query(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev)
     ret = nv_handle_query_nvml_processes(arg_copy);
     break;
   case 0x1f48:
-    ret = nv_handle_query_nvml_process_mem_post(arg_copy);
+    ret = nv_handle_query_nvml_process_mem_1f48_post(arg_copy);
+    break;
+  case 0x2588:
+    ret = nv_handle_query_nvml_process_mem_2588_post(arg_copy);
     break;
   }
 
