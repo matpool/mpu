@@ -59,15 +59,28 @@ typedef struct mpu_nvml_process_list {
     u32 pl[];
 } mpu_nvml_process_list_t;
 
-typedef struct mpu_nvml_process_mem_item {
+// ver. 440
+typedef struct mpu_nvml_process_mem_item_1f48 {
     u32 pid;
     u32 _0[9];
-} mpu_nvml_process_mem_item_t;
+} mpu_nvml_process_mem_item_1f48_t;
 
-typedef struct mpu_nvml_process_mem_list {
+typedef struct mpu_nvml_process_mem_list_1f48 {
     u32 cnt;
     u32 _0;
-    mpu_nvml_process_mem_item_t pl[];
-} mpu_nvml_process_mem_list_t;
+    mpu_nvml_process_mem_item_1f48_t pl[];
+} mpu_nvml_process_mem_list_1f48_t;
+
+// ver. 460 
+typedef struct mpu_nvml_process_mem_item_2588 {
+    u32 pid;
+    u32 _0[11];
+} mpu_nvml_process_mem_item_2588_t;
+
+typedef struct mpu_nvml_process_mem_list_2588 {
+    u32 cnt;
+    u32 _0;
+    mpu_nvml_process_mem_item_2588_t pl[];
+} mpu_nvml_process_mem_list_2588_t;
 
 #endif // __MPU_NV_H__
