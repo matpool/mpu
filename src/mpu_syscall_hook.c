@@ -29,7 +29,29 @@
 #define FILE_INODE(f) (f->f_path.dentry->d_inode)
 #endif // FILE_INODE
 
+// kernel 4.17 introduces syscall wrapper
+#ifdef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
+typedef asmlinkage long (*ioctl_fn)(const struct pt_regs *);
+
+typedef struct mpu_ioctl_private_s
+{
+  mpu_ioctl_call_t c;
+  ioctl_fn ioctl;
+  const struct pt_regs *regs;
+} mpu_ioctl_private_t;
+
+static asmlinkage long mpu_hooked_ioctl(const struct pt_regs *regs);
+#else
 typedef asmlinkage long (*ioctl_fn)(unsigned int fd, unsigned int cmd, unsigned long arg);
+
+typedef struct mpu_ioctl_private_s
+{
+  mpu_ioctl_call_t c;
+  ioctl_fn ioctl;
+} mpu_ioctl_private_t;
+
+static asmlinkage long mpu_hooked_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg);
+#endif // CONFIG_ARCH_HAS_SYSCALL_WRAPPER
 
 // all its fields are immutable without ownership
 typedef struct mpu_syscall_hook_s
@@ -39,8 +61,6 @@ typedef struct mpu_syscall_hook_s
   unsigned long **syscall_tbl;
   ioctl_fn ioctl;
 } mpu_syscall_hook_t;
-
-static asmlinkage long mpu_hooked_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg);
 
 static mpu_syscall_hook_t mpu_hook_instance;
 
@@ -70,18 +90,6 @@ static void write_syscall(unsigned long **syscall_tbl, ioctl_fn sys_ioctl)
   write_cr0(local_cr0 & ~0x00010000);
   syscall_tbl[__NR_ioctl] = (unsigned long *)sys_ioctl;
   write_cr0(local_cr0);
-}
-
-asmlinkage long mpu_hooked_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg)
-{
-  mpu_ioctl_call_t c = {
-      .ioctl = mpu_hook_instance.ioctl,
-      .fd = fd,
-      .cmd = cmd,
-      .arg = arg,
-  };
-  dev_t dev = get_rdev(fd);
-  return mpu_hook_instance.module->ioctl(mpu_hook_instance.ctx, &c, dev);
 }
 
 int mpu_init_ioctl_hook(mpu_module_t *module, mpu_ctx_t *ctx)
@@ -122,3 +130,46 @@ void mpu_exit_ioctl_hook(void)
     write_syscall(mpu_hook_instance.syscall_tbl, mpu_hook_instance.ioctl);
   }
 }
+
+#ifdef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
+static asmlinkage long mpu_hooked_ioctl(const struct pt_regs *regs)
+{
+  mpu_ioctl_private_t pc = {
+      .c = {
+          .fd = (unsigned int)regs->di,
+          .cmd = (unsigned int)regs->si,
+          .arg = (unsigned long)regs->dx,
+      },
+      .ioctl = mpu_hook_instance.ioctl,
+      .regs = regs,
+  };
+  dev_t dev = get_rdev(pc.c.fd);
+  return mpu_hook_instance.module->ioctl(mpu_hook_instance.ctx, &pc.c, dev);
+}
+
+long mpu_call_ioctl(mpu_ioctl_call_t *c)
+{
+  mpu_ioctl_private_t *pc = container_of(c, mpu_ioctl_private_t, c);
+  return pc->ioctl(pc->regs);
+}
+#else
+static asmlinkage long mpu_hooked_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg)
+{
+  mpu_ioctl_private_t pc = {
+      .c = {
+          .fd = fd,
+          .cmd = cmd,
+          .arg = arg,
+      },
+      .ioctl = mpu_hook_instance.ioctl,
+  };
+  dev_t dev = get_rdev(fd);
+  return mpu_hook_instance.module->ioctl(mpu_hook_instance.ctx, &pc.c, dev);
+}
+
+long mpu_call_ioctl(mpu_ioctl_call_t *c)
+{
+  mpu_ioctl_private_t *pc = container_of(c, mpu_ioctl_private_t, c);
+  return pc->ioctl(c->fd, c->cmd, c->arg);
+}
+#endif // CONFIG_ARCH_HAS_SYSCALL_WRAPPER
