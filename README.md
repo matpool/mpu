@@ -9,7 +9,14 @@ What's more, The NVIDIA driver is proprietary and we have no idea what's going o
 - add 'hostPID: true' to the pod specification
 - add '--pid=host' when starting a docker instance
 
-# The solution steps
+# Installation
+- for debian, to get kernel headers installed with `sudo apt install linux-headers-$(uname -r)`. run `sudo apt-get install build-essential` to get `make` toolset installed.
+- clone this repo
+- `cd` and `make`
+- after build succeeded, `sudo make install` to install the module
+- using docker to create `--gpu` enabled instance and run several cases and check process list via `nvidia-smi` to see if all associated processes have been correctly shown
+
+# The steps
 - figure out the basic mechanism of the NVIDIA driver with the open sourced part
 - do some reverse engineering tests on the driver via GDB tools and several scripts (cuda/NVML)
 - use our module to intercept syscalls and re-write fields of data strucuture with the knowledge of reverse engineering
@@ -32,7 +39,8 @@ What's more, The NVIDIA driver is proprietary and we have no idea what's going o
 ---
 
 # NOTE
-only tested on _kernel 4.15.0-136 x64_ , _docker 19.03.15_ , _NVIDIA driver 440.64_
+tested on _kernel 4.15.0-136 x64_ , _docker 19.03.15_ , _NVIDIA driver 440.64_
+_kernel 4.19.0-14 x64_,  _NVIDIA driver 460.32_
 
 ---
 Afterwords, we'd like to maintain the project with fully tested and more kernels and NVIDIA drivers supported. 
