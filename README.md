@@ -10,6 +10,8 @@ What's more, The NVIDIA driver is proprietary and we have no idea what's going o
 - add '--pid=host' when starting a docker instance
 
 # Installation
+NOTE: kernel 5.7.7 build routines don't export kallsyms kernel functions any longer, which means this module may not work properly.
+
 - for debian, to get kernel headers installed with `sudo apt install linux-headers-$(uname -r)`. run `sudo apt-get install build-essential` to get `make` toolset installed.
 - clone this repo
 - `cd` and `make`
