@@ -202,6 +202,12 @@ static long nv_handle_query_nvml_process_mem_2588_pre(mpu_dev_query_t *qm)
 static long nv_handle_query_nvml_process_mem_2588_post(mpu_dev_query_t *qm)
   MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_mem_list_2588_t, mpu_nvml_process_mem_item_2588_t, cast_vnr_pids)
 
+static long nv_handle_query_nvml_process_mem_3848_pre(mpu_dev_query_t *qm)
+  MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_mem_list_3848_t, mpu_nvml_process_mem_item_3848_t, cast_nr_pids)
+
+static long nv_handle_query_nvml_process_mem_3848_post(mpu_dev_query_t *qm)
+  MPU_NV_CAST_PIDS_IMPL(qm->u_ptr, mpu_nvml_process_mem_list_3848_t, mpu_nvml_process_mem_item_3848_t, cast_vnr_pids)
+
 static long nv_handle_dev_query(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev)
 {
   size_t arg_size = _IOC_SIZE(ioctl_c->cmd);
@@ -234,6 +240,9 @@ static long nv_handle_dev_query(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev)
   case 0x2588:
     ret = nv_handle_query_nvml_process_mem_2588_pre(arg_copy);
     break;
+  case 0x3848:
+    ret = nv_handle_query_nvml_process_mem_3848_pre(arg_copy);
+    break;
   }
   if (ret < 0)
     goto done;
@@ -252,6 +261,9 @@ static long nv_handle_dev_query(struct mpu_ioctl_call_s *ioctl_c, dev_t rdev)
     break;
   case 0x2588:
     ret = nv_handle_query_nvml_process_mem_2588_post(arg_copy);
+    break;
+  case 0x3848:
+    ret = nv_handle_query_nvml_process_mem_3848_post(arg_copy);
     break;
   }
 
