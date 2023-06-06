@@ -97,6 +97,14 @@ int mpu_init_ioctl_hook(mpu_module_t *module, mpu_ctx_t *ctx)
   unsigned long **syscall_tbl;
   ioctl_fn sys_ioctl;
 
+#ifdef KPROBE_LOOKUP
+  typedef unsigned long (*kallsyms_lookup_name_t)(const char *name);
+  kallsyms_lookup_name_t kallsyms_lookup_name;
+  register_kprobe(&kp);
+  kallsyms_lookup_name = (kallsyms_lookup_name_t) kp.addr;
+  unregister_kprobe(&kp);
+#endif
+
   if (!module || !module->ioctl || !ctx)
   {
     return -EINVAL;
