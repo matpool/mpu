@@ -82,14 +82,28 @@ static dev_t get_rdev(unsigned int fd)
   return rdev;
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 3, 0)
+static inline void write_cr0_forced(unsigned long val)
+{
+	unsigned long __force_order;
+
+	asm volatile(
+		"mov %0, %%cr0"
+		: "+r"(val), "+m"(__force_order));
+}
+#define WRITE_CR0(f) write_cr0_forced(f)
+#else
+#define WRITE_CR0(f) write_cr0(f)
+#endif
+
 static void write_syscall(unsigned long **syscall_tbl, ioctl_fn sys_ioctl)
 {
   unsigned long local_cr0;
 
   local_cr0 = read_cr0();
-  write_cr0(local_cr0 & ~0x00010000);
+  WRITE_CR0(local_cr0 & ~0x00010000);
   syscall_tbl[__NR_ioctl] = (unsigned long *)sys_ioctl;
-  write_cr0(local_cr0);
+  WRITE_CR0(local_cr0);
 }
 
 int mpu_init_ioctl_hook(mpu_module_t *module, mpu_ctx_t *ctx)
