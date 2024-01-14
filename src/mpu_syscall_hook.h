@@ -34,6 +34,18 @@ typedef struct mpu_ioctl_call_s
   unsigned long arg;
 } mpu_ioctl_call_t;
 
+/*
+ * On Linux kernels 5.7+, kallsyms_lookup_name() is no longer exported,
+ * so we have to use kprobes to get the address.
+ */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,7,0)
+#define KPROBE_LOOKUP 1
+#include <linux/kprobes.h>
+static struct kprobe kp = {
+  .symbol_name = "kallsyms_lookup_name"
+};
+#endif
+
 /**
  * starting hook syscall ioctl based on 
  * @param module hooked ioctl will invoke module's ioctl with @param ctx provided
