@@ -10,7 +10,6 @@ What's more, The NVIDIA driver is proprietary and we have no idea what's going o
 - add '--pid=host' when starting a docker instance
 
 # Installation
-NOTE: kernel 5.7.7 build routines don't export kallsyms kernel functions any longer, which means this module may not work properly.
 
 - for debian, to get kernel headers installed with `sudo apt install linux-headers-$(uname -r)`. run `sudo apt-get install build-essential` to get `make` toolset installed.
 - clone this repo
@@ -41,10 +40,16 @@ NOTE: kernel 5.7.7 build routines don't export kallsyms kernel functions any lon
 ---
 
 # NOTE
-tested on 
+
+Tested on:
+
 - _kernel 4.15.0-136 x64_ , _docker 19.03.15_ , _NVIDIA driver 440.64_
 - _kernel 4.19.0-14 x64_,  _NVIDIA driver 460.32_
+- _kernel 5.14.0-404 x64_, _LXC 4.0.12_, _NVIDIA driver 535.129.03_
 
 ---
+
+NOTE: Kernel 5.7.7 build routines don't export kallsyms kernel functions any longer. Although it has been patched, this module may not work properly in future higher versions.
+
 Afterwords, we'd like to maintain the project with fully tested and more kernels and NVIDIA drivers supported. 
 However we sincerely hope NVIDIA will fix this with simplicity and professionalism. Thx.
