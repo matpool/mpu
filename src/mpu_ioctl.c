@@ -133,6 +133,11 @@ static void cast_nr_pids(u32 *pids, u32 off, u32 cnt)
 static void print_pids(u32 *pids, u32 off, u32 cnt, const char *tag)
 {
   u32 i;
+  
+  // Only print if debug is enabled via module parameter
+  if (!mpu_debug_enabled())
+    return;
+    
   for (i = 0; i < cnt; i++, pids += off)
   {
     printk(KERN_DEBUG "mpu: %s dump process pid %u\n", tag, *pids);

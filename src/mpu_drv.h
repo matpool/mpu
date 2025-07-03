@@ -21,6 +21,7 @@
 #include <linux/kernel.h>
 #include <linux/version.h>
 #include <linux/module.h>
+#include <linux/ioctl.h>
 
 struct mpu_ioctl_call_s;
 struct mpu_nv_handlers_s;
@@ -39,5 +40,8 @@ typedef struct mpu_module_s
      */
   long (*ioctl)(mpu_ctx_t *ctx, struct mpu_ioctl_call_s *ioctl_c, dev_t rdev);
 } mpu_module_t;
+
+// Add debug function declaration
+extern bool mpu_debug_enabled(void);
 
 #endif // __MPU_DRV_H__
